@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HK & Malaysia Trip 2026</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tropical-bg': '#FFFBF0',       // 溫暖米黃底色
+                        'fresh-teal': '#009688',        // 熱帶綠 (主色)
+                        'deep-teal': '#004D40',         // 深綠 (文字/強調)
+                        'vibrant-orange': '#FF7043',    // 活力橘 (按鈕/點綴) - 呼應香港計程車/馬來西亞香料
+                        'soft-gray': '#F5F5F5',         // 背景灰
+                        'hk-red': '#D32F2F',            // 香港紅
+                        'my-yellow': '#FBC02D'          // 大馬黃
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            background-color: #FFFBF0; 
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: #334155;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #ffffff; 
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+            padding-bottom: 90px;
+        }
+
+        .header-bg {
+            background-color: #ffffff; 
+            padding: 0; 
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
+            border-bottom-left-radius: 35px; 
+            border-bottom-right-radius: 35px;
+            z-index: 10; 
+            padding-bottom: 0px; 
+        }
+        
+        .header-image-container {
+            width: 100%;
+            height: 250px; 
+            overflow: hidden;
+            background-color: #ddd; 
+            border-bottom-left-radius: 35px; 
+            border-bottom-right-radius: 35px;
+            position: relative;
+        }
+        
+        .header-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            display: block; 
+        }
+        
+        .header-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+            pointer-events: none;
+            border-bottom-left-radius: 35px; 
+            border-bottom-right-radius: 35px;
+        }
+        
+        .side-tab-bar {
+            position: absolute;
+            bottom: 45px; 
+            right: 16px;
+            z-index: 30;
+            display: flex;
+            flex-direction: row;
+            gap: 8px; 
+        }
+        
+        .tab-button {
+            width: 40px; 
+            height: 40px;
+            border-radius: 9999px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .tab-button.active {
+            background-color: #009688; /* fresh-teal */
+            color: #ffffff;
+            box-shadow: 0 6px 15px rgba(0, 150, 136, 0.4); 
+            transform: scale(1.05);
+        }
+        
+        .tab-button:not(.active) {
+            background-color: #ffffff;
+            color: #80CBC4; 
+        }
+
+        .app-main {
+            padding-top: 25px !important; 
+            position: relative;
+            z-index: 5;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none; 
+        }
+
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0, 150, 136, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fab-shadow {
+            box-shadow: 0 4px 15px rgba(255, 112, 67, 0.5);
+        }
+
+        .note-content {
+            max-height: 2.5rem;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .note-content.expanded {
+            max-height: 500px;
+        }
+        
+        .expense-category-tag {
+            min-width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .expenses-banner {
+            /* 橘色到深綠色的熱帶漸層 */
+            background: linear-gradient(135deg, #FF7043 0%, #004D40 100%);
+        }
+        
+        .date-selector-sticky {
+            background-color: #ffffff;
+            border-bottom: 1px solid #f0f0f0; 
+            z-index: 20; 
+            top: 0; 
+        }
+
+        /* 國家標籤 */
+        .country-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+        .badge-hk { background-color: #FFEBEE; color: #D32F2F; }
+        .badge-my { background-color: #FFFDE7; color: #FBC02D; }
+    </style>
+</head>
+<body>
+
+<div id="app" class="app-container">
+
+    <div class="header-bg relative">
+        <div class="header-image-container">
+            <!-- 替換為吉隆坡雙子星塔或香港夜景的圖片 -->
+            <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=800&auto=format&fit=crop" alt="HK & Malaysia Trip">
+            <div class="header-overlay"></div>
+            
+            <div class="absolute bottom-5 left-6 text-white z-20">
+                <h1 class="text-2xl font-bold shadow-black drop-shadow-md">HK & Malaysia</h1>
+                <p class="text-sm opacity-90 drop-shadow-md">Family Trip 2026</p>
+            </div>
+        </div>
+        
+        <div class="side-tab-bar">
+            <button @click="currentTab = 'itinerary'" title="行程" 
+                    :class="{'active': currentTab === 'itinerary'}" 
+                    class="tab-button">
+                <i class="fa-solid fa-map-location-dot"></i>
+            </button>
+            
+            <button @click="currentTab = 'info'" title="資訊" 
+                    :class="{'active': currentTab === 'info'}" 
+                    class="tab-button">
+                <i class="fa-solid fa-circle-info"></i>
+            </button>
+            
+            <button @click="currentTab = 'shopping'" title="購物" 
+                    :class="{'active': currentTab === 'shopping'}" 
+                    class="tab-button">
+                <i class="fa-solid fa-basket-shopping"></i>
+            </button>
+            
+            <button @click="currentTab = 'expenses'" title="花費" 
+                    :class="{'active': currentTab === 'expenses'}" 
+                    class="tab-button">
+                <i class="fa-solid fa-coins"></i>
+            </button>
+        </div>
+    </div>
+
+    
+    <main class="p-4 app-main">
+        
+        <!-- 行程 Tab -->
+        <div v-if="currentTab === 'itinerary'" class="animate-fade-in">
+            
+            <div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-4 mb-2 snap-x px-1 sticky date-selector-sticky pt-1 -mx-4 px-4">
+                <div v-for="(day, index) in dates" :key="index" 
+                     @click="selectedDateIndex = index"
+                     class="snap-center flex-shrink-0 w-[58px] h-[68px] rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border-2 shadow-sm"
+                     :class="selectedDateIndex === index ? 'bg-deep-teal text-white border-deep-teal shadow-lg scale-105' : 'bg-white text-slate-400 border-white hover:bg-soft-gray'">
+                    
+                    <span class="text-xs font-bold" :class="day.country === 'HK' ? 'text-red-300' : 'text-yellow-300'" v-if="selectedDateIndex === index">{{ day.country }}</span>
+                    <span class="text-xs font-bold text-slate-300" v-else>{{ day.country }}</span>
+
+                    <span class="text-sm font-bold uppercase tracking-wider">{{ day.weekday }}</span> 
+                    <span class="text-xs font-medium opacity-70">{{ day.date }}</span> 
+                </div>
+            </div>
+
+            <div v-if="weatherData[selectedDateIndex]" class="mb-4 bg-white border border-teal-100 rounded-2xl p-4 flex justify-between items-center shadow-md">
+                <div class="flex items-start text-deep-teal space-x-4">
+                    <i :class="getWeatherIcon(weatherData[selectedDateIndex].condition)" class="text-5xl text-vibrant-orange"></i>
+                    
+                    <div class="pt-1">
+                        <span class="text-3xl font-extrabold leading-none">{{ weatherData[selectedDateIndex].temp }}°C</span>
+                        <span class="block text-xs text-slate-600 mt-1">體感: {{ weatherData[selectedDateIndex].feel }}°C</span> 
+                    </div>
+                </div>
+                <div class="text-right text-xs text-slate-600 pl-3">
+                    <span class="font-bold block text-slate-700 text-lg">{{ getWeatherDescription(weatherData[selectedDateIndex].condition) }}</span>
+                    
+                    <span v-if="dates[selectedDateIndex].hasCar" class="mt-1 block text-deep-teal font-bold">
+                        <i class="fa-solid fa-car-side mr-1 text-vibrant-orange"></i> 包車/Grab
+                    </span>
+                    <span v-else class="mt-1 block text-slate-400">地鐵/步行</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div v-for="(item, idx) in currentItinerary" :key="item.id" class="relative group">
+                    
+                    <div v-if="idx > 0" class="pl-8 pb-2 flex items-center text-xs text-slate-400">
+                        <div class="h-6 w-0.5 bg-slate-200 absolute left-6 -top-3"></div>
+                        
+                        <i :class="getTransportIcon(currentItinerary[idx].transportType)" 
+                            class="mr-2 text-slate-300 cursor-pointer hover:text-deep-teal transition-colors" 
+                           @click="openMapDirections(currentItinerary[idx - 1], item)">
+                        </i>
+                        <span class="font-bold">{{ item.travelTime || '約 20 分鐘' }}</span>
+                    </div>
+                    
+                    <div class="bg-white rounded-3xl p-5 card-shadow relative overflow-hidden flex items-start border border-teal-50">
+                        
+                        <div class="mr-4 flex flex-col items-center min-w-[50px]">
+                            <div class="p-2 rounded-full text-white shadow-md text-base mb-1" :class="getCategoryColor(item.category)">
+                                <i :class="getCategoryIcon(item.category)"></i>
+                            </div>
+                            <span v-if="item.startTime" class="text-xs font-bold text-slate-600 mt-1">{{ item.startTime }}</span>
+                        </div>
+
+                        <div class="flex-1 pb-1">
+                            <span class="country-badge" :class="dates[selectedDateIndex].country === 'HK' ? 'badge-hk' : 'badge-my'">
+                                {{ dates[selectedDateIndex].country === 'HK' ? '香港' : '馬來西亞' }}
+                            </span>
+                            <h3 class="text-lg font-bold text-slate-800 mb-1 leading-tight pr-8">{{ item.name }}</h3>
+                            
+                            <div class="text-sm text-slate-500 space-y-1.5 mt-2">
+                                <p v-if="item.hours" class="flex items-center"><i class="fa-regular fa-clock w-4 text-center mr-2 text-fresh-teal"></i> {{ item.hours }}</p>
+                                <p v-if="item.price" class="flex items-center"><i class="fa-solid fa-ticket w-4 text-center mr-2 text-fresh-teal"></i> {{ item.price }}</p>
+                                <p v-if="item.address" class="flex items-start"><i class="fa-solid fa-location-dot w-4 text-center mr-2 mt-1 text-fresh-teal"></i> {{ item.address }}</p>
+                            </div>
+
+                            <div v-if="item.note && item.note.length > 0" class="mt-3 text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                <p class="text-slate-600 font-bold mb-1 flex items-center">
+                                    <i class="fa-solid fa-highlighter text-vibrant-orange mr-2"></i> 備註
+                                </p>
+                                <div class="note-content" :class="{'expanded': item.isNoteExpanded}">
+                                    {{ item.note }}
+                                </div>
+                                <button v-if="item.note.length > 50" @click="item.isNoteExpanded = !item.isNoteExpanded" class="text-deep-teal font-bold mt-1 block">
+                                    {{ item.isNoteExpanded ? '收合備註' : '查看更多...' }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="absolute top-3 right-3 flex flex-col space-y-1">
+                            <button v-if="idx > 0" @click.stop="moveItineraryUp(item.id)" class="w-7 h-7 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-xs hover:bg-slate-300 transition-colors" title="上移">
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                            <button v-if="idx < currentItinerary.length - 1" @click.stop="moveItineraryDown(item.id)" class="w-7 h-7 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-xs hover:bg-slate-300 transition-colors" title="下移">
+                                <i class="fa-solid fa-arrow-down"></i>
+                            </button>
+                            <button @click.stop="openMap(item.address || item.name)" class="w-7 h-7 bg-green-50 text-deep-teal rounded-full flex items-center justify-center text-xs hover:bg-deep-teal hover:text-white transition-colors" title="Google Maps 導航">
+                                <i class="fa-solid fa-location-arrow"></i>
+                            </button>
+                            <button @click.stop="editItem(item)" class="w-7 h-7 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-xs hover:bg-slate-200 transition-colors" title="編輯行程">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentItinerary.length === 0" class="text-center py-16 text-slate-300">
+                    <i class="fa-solid fa-map-location-dot text-5xl mb-3 text-slate-200"></i>
+                    <p class="text-sm">本日尚無行程<br>請點擊右下角新增</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 資訊 Tab -->
+        <div v-if="currentTab === 'info'" class="space-y-5 animate-fade-in">
+            
+            <div class="bg-gradient-to-r from-deep-teal to-fresh-teal rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -ml-10 -mb-10 blur-2xl"></div>
+                
+                <div class="flex justify-between items-center mb-4 relative z-10">
+                    <h3 class="font-bold text-lg flex items-center"><i class="fa-solid fa-calculator mr-2"></i> 匯率換算</h3>
+                    <div class="bg-white/20 rounded-lg p-1 flex">
+                        <button @click="currencyMode = 'HKD'; calculateCurrency()" :class="currencyMode === 'HKD' ? 'bg-white text-deep-teal' : 'text-white/70'" class="px-3 py-1 text-xs rounded-md font-bold transition-colors">HKD</button>
+                        <button @click="currencyMode = 'MYR'; calculateCurrency()" :class="currencyMode === 'MYR' ? 'bg-white text-deep-teal' : 'text-white/70'" class="px-3 py-1 text-xs rounded-md font-bold transition-colors">MYR</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between space-x-3 relative z-10">
+                    <div class="flex-1">
+                        <label class="text-[10px] text-teal-100 block mb-1 uppercase tracking-wider">{{ currencyMode }} (當地)</label>
+                        <input type="number" v-model="currencyInput" @input="calculateCurrency" class="w-full bg-white/20 border border-white/30 rounded-xl px-3 py-2.5 text-white placeholder-white/50 focus:outline-none focus:bg-white/30 text-lg font-bold" placeholder="$">
+                    </div>
+                    <i class="fa-solid fa-arrow-right-arrow-left text-teal-300 mt-5"></i>
+                    <div class="flex-1">
+                        <label class="text-[10px] text-teal-100 block mb-1 uppercase tracking-wider">TWD (台幣)</label>
+                        <div class="w-full bg-white/10 rounded-xl px-3 py-2.5 text-white text-lg font-bold border border-transparent">
+                            $ {{ currencyResult }}
+                        </div>
+                    </div>
+                </div>
+                <p class="text-[10px] text-teal-200 mt-3 text-right relative z-10">匯率基準: HKD ≈ {{ EXCHANGE_RATES.HKD }}, MYR ≈ {{ EXCHANGE_RATES.MYR }}</p>
+            </div>
+            
+            <div class="bg-white rounded-3xl p-5 card-shadow">
+                <h3 class="font-bold text-slate-800 mb-3 border-b border-slate-100 pb-2"><i class="fa-solid fa-plane-departure text-blue-500 mr-2"></i> 航班資訊</h3>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 rounded-xl p-3 border border-blue-100">
+                        <div class="flex justify-between text-sm font-bold text-deep-sea-blue mb-1">
+                            <span>TPE 台北</span>
+                            <i class="fa-solid fa-plane text-xs"></i>
+                            <span>KUL 吉隆坡</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>00:20</span>
+                            <span>2026/02/12</span>
+                            <span>05:10</span>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-xl p-3 border border-purple-100">
+                        <div class="flex justify-between text-sm font-bold text-purple-800 mb-1">
+                            <span>SZB 吉隆坡(梳邦)</span>
+                            <i class="fa-solid fa-plane text-xs"></i>
+                            <span>HKG 香港</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>21:30</span>
+                            <span>2026/02/19</span>
+                            <span>01:45 (+1)</span>
+                        </div>
+                    </div>
+                    <div class="bg-orange-50 rounded-xl p-3 border border-orange-100">
+                        <div class="flex justify-between text-sm font-bold text-orange-800 mb-1">
+                            <span>HKG 香港</span>
+                            <i class="fa-solid fa-plane text-xs"></i>
+                            <span>TPE 台北</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>12:15</span>
+                            <span>2026/02/24</span>
+                            <span>13:55</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 card-shadow">
+                <h3 class="font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3"><i class="fa-solid fa-hotel text-indigo-500 mr-2"></i> 住宿資訊</h3>
+                <ul class="space-y-5">
+                    <li v-for="hotel in hotels" class="border-b last:border-0 pb-4 last:pb-0">
+                        <div class="flex justify-between items-start group">
+                            <div class="flex-1">
+                                <span class="country-badge" :class="hotel.country === 'HK' ? 'badge-hk' : 'badge-my'">
+                                    {{ hotel.country === 'HK' ? '香港' : '大馬' }}
+                                </span>
+                                <span class="font-bold block text-slate-700 text-lg">{{ hotel.name }}</span>
+                                <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full inline-block mt-1">{{ hotel.date }}</span>
+                            </div>
+                            <button @click="openMap(hotel.name)" class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all"><i class="fa-solid fa-location-arrow text-xs"></i></button>
+                        </div>
+                        <div class="text-sm text-slate-500 mt-2 space-y-1">
+                            <p class="flex items-center"><i class="fa-solid fa-phone w-4 text-center mr-2 text-slate-300"></i> <a :href="'tel:' + hotel.phone" class="hover:text-deep-teal">{{ hotel.phone }}</a></p>
+                            <p class="flex items-start"><i class="fa-solid fa-map-pin w-4 text-center mr-2 mt-1 text-slate-300"></i> {{ hotel.address }}</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="bg-red-50 rounded-3xl p-6 border border-red-100">
+                <h3 class="font-bold text-red-800 mb-4"><i class="fa-solid fa-kit-medical mr-2"></i> 緊急聯絡</h3>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="text-sm text-slate-600 mb-2 col-span-2 text-left bg-white p-3 rounded-xl border border-red-50">
+                        <p class="mb-1"><strong class="text-red-700">香港：</strong> 報案/火警/急救: 999</p>
+                        <p><strong class="text-yellow-700">馬來西亞：</strong> 報案/急救: 999</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 購物 Tab -->
+        <div v-if="currentTab === 'shopping'" class="animate-fade-in">
+            <div class="grid grid-cols-2 gap-4">
+                <div v-for="(item, idx) in shoppingList" :key="idx" class="bg-white rounded-2xl p-3 card-shadow relative group">
+                    <div class="aspect-square bg-slate-50 rounded-xl mb-3 overflow-hidden relative border border-slate-100">
+                        <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
+                        <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
+                            <i class="fa-solid fa-bag-shopping text-3xl"></i>
+                        </div>
+                        <button @click="removeShoppingItem(idx)" class="absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <p class="font-bold text-sm text-slate-800 truncate px-1">{{ item.name }}</p>
+                </div>
+                
+                <div v-if="shoppingList.length % 2 !== 0" class="h-0 invisible"></div>
+                
+                <div v-if="shoppingList.length === 0" class="col-span-2 text-center py-16 text-slate-300">
+                    <i class="fa-solid fa-bag-shopping text-5xl mb-3 text-slate-200"></i>
+                    <p class="text-sm">購物清單空白<br>請點擊右下角新增</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 花費 Tab -->
+        <div v-if="currentTab === 'expenses'" class="animate-fade-in">
+            <div class="expenses-banner text-white rounded-3xl p-8 mb-6 relative overflow-hidden">
+               
+                <div class="absolute -right-10 -top-10 bg-white/10 w-48 h-48 rounded-full blur-3xl"></div>
+                <div class="absolute -left-10 -bottom-10 bg-yellow-400/20 w-40 h-40 rounded-full blur-2xl"></div>
+                <p class="text-sm text-yellow-100 mb-2 relative z-10">目前總花費 (TWD)</p>
+                <h2 class="text-5xl font-bold relative z-10 tracking-tight">$ {{ formatNumber(totalExpensesTWD) }}</h2>
+                <p class="text-xs text-right mt-2 opacity-80 relative z-10">請直接輸入台幣金額記帳</p>
+            </div>
+
+            <div class="bg-white rounded-t-3xl min-h-[500px] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] -mx-4 px-8">
+                <h3 class="font-bold text-slate-800 mb-5 flex items-center">
+                    <i class="fa-solid fa-receipt text-slate-300 mr-2"></i>支出紀錄
+                </h3>
+                <div class="space-y-5">
+                    <div v-for="(exp, idx) in expenses" :key="idx" class="flex items-center justify-between border-b border-slate-50 pb-4 last:border-0">
+                        <div class="flex items-center">
+                            <div class="expense-category-tag mr-4" :class="[getCategoryColor(exp.category), 'text-white']">
+                                {{ getCategoryLabel(exp.category) }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-700 text-sm mb-0.5">{{ exp.name }}</p>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wide">{{ exp.date }} · {{ exp.payment === 'card' ? '信用卡' : '現金' }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right flex items-center">
+                            <p class="font-bold text-slate-700">NT${{ formatNumber(exp.amount) }}</p>
+                            <button @click="removeExpense(idx)" class="w-5 h-5 ml-3 text-red-300 hover:text-red-500 transition-colors flex items-center justify-center">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+ 
+    <button v-if="currentTab !== 'info'" @click="handleAddClick" class="fixed bottom-6 right-6 w-14 h-14 bg-vibrant-orange rounded-full fab-shadow text-white text-2xl flex items-center justify-center hover:scale-110 transition-transform z-40">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- Modal: 購物 -->
+    <div v-if="showShoppingModal" class="fixed inset-0 bg-deep-teal/40 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+            <h3 class="font-bold text-lg mb-5 text-center text-slate-800">新增購物清單</h3>
+            <input v-model="newShoppingItem.name" type="text" placeholder="商品名稱" class="w-full bg-slate-50 border-none rounded-xl p-4 mb-4 focus:ring-2 focus:ring-deep-teal text-sm">
+            <div class="relative mb-6">
+                <input type="file" @change="handleImageUpload" class="hidden" id="fileInput">
+                <label for="fileInput" class="w-full h-36 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center cursor-pointer text-slate-400 hover:bg-slate-100 hover:border-border-slate-300 transition-all">
+                    <span v-if="!newShoppingItem.image" class="flex flex-col items-center text-xs">
+                        <i class="fa-solid fa-camera text-2xl mb-2"></i> 上傳照片
+                    </span>
+                    <img v-else :src="newShoppingItem.image" class="h-full w-full object-contain rounded-xl">
+                </label>
+           
+            </div>
+            <div class="flex space-x-3">
+                <button @click="showShoppingModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button>
+                <button @click="addShoppingItem" class="flex-1 py-3 rounded-xl bg-deep-teal text-white font-bold text-sm shadow-lg shadow-deep-teal/30">新增</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal: 花費 -->
+    <div v-if="showExpenseModal" class="fixed inset-0 bg-deep-teal/40 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+            <h3 class="font-bold text-lg mb-5 text-center text-slate-800">記一筆</h3>
+            <p class="text-xs text-center text-slate-400 -mt-4 mb-4">請輸入轉換後的台幣金額</p>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <input v-model="newExpense.date" type="date" class="bg-slate-50 rounded-xl p-3 text-sm text-slate-600 outline-none">
+                <select v-model="newExpense.category" class="bg-slate-50 rounded-xl p-3 text-sm text-slate-600 outline-none">
+                    <option value="food">飲食</option>
+                    <option value="shopping">購物</option>
+                    <option value="transport">交通</option>
+                    <option value="stay">住宿</option>
+            
+                    <option value="ticket">門票</option>
+                    <option value="other">其他</option>
+                </select>
+            </div>
+            <input v-model="newExpense.name" placeholder="名稱 (如: 添好運/肉骨茶)" class="w-full bg-slate-50 rounded-xl p-4 mb-4 text-sm outline-none focus:ring-2 focus:ring-vibrant-orange">
+            <div class="relative mb-4">
+   
+                <span class="absolute left-4 top-4 text-slate-400 font-bold">NT$</span>
+                <input v-model.number="newExpense.amount" type="number" placeholder="金額" class="w-full bg-slate-50 rounded-xl p-4 pl-12 text-sm outline-none focus:ring-2 focus:ring-vibrant-orange font-bold text-lg">
+            </div>
+            <div class="flex space-x-3 mb-6">
+                <button @click="newExpense.payment='cash'" :class="newExpense.payment==='cash' ? 'bg-deep-teal text-white' : 'bg-slate-100 text-slate-500'" class="flex-1 py-3 rounded-xl text-sm transition-colors"><i class="fa-solid fa-coins mr-1"></i> 現金</button>
+                <button @click="newExpense.payment='card'" :class="newExpense.payment==='card' ? 'bg-deep-teal text-white' : 'bg-slate-100 text-slate-500'" class="flex-1 py-3 rounded-xl text-sm transition-colors"><i class="fa-solid fa-credit-card mr-1"></i> 信用卡</button>
+            </div>
+            <div class="flex space-x-3">
+                <button @click="showExpenseModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button>
+                <button @click="addExpense" class="flex-1 py-3 rounded-xl bg-vibrant-orange text-white font-bold text-sm shadow-lg shadow-vibrant-orange/30">儲存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal: 行程 -->
+    <div v-if="showItineraryModal" class="fixed inset-0 bg-deep-teal/40 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold text-lg mb-5 text-center text-slate-800">{{ isEditMode ? '編輯行程' : '新增行程' }}</h3>
+            <div class="space-y-3">
+                <select v-model="newItinerary.category" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
+                    <option value="sightseeing">景點</option>
+                    <option value="food">飲食</option>
+                    <option value="shopping">購物</option>
+                    <option value="accommodation">住宿</option>
+                    <option value="flight">航班</option>
+                    <option value="transport">交通</option>
+                    <option value="ticket">門票</option>
+                    <option value="other">其他</option>
+                </select>
+                <input v-model="newItinerary.name" placeholder="名稱" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-teal">
+                <input v-model="newItinerary.address" placeholder="地址/地點 (Google Map 搜尋用)" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-teal">
+                <div class="grid grid-cols-2 gap-3">
+                    <input v-model="newItinerary.startTime" type="text" placeholder="時間 (e.g. 09:30)" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
+                    <select v-model="newItinerary.transportType" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
+                        <option value="walk">步行</option>
+                        <option value="car">包車/Grab</option>
+                        <option value="bus">巴士</option>
+                        <option value="public">地鐵/快線</option>
+                        <option value="flight">飛機</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <input v-model="newItinerary.travelTime" type="text" placeholder="車程/移動時間" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
+                    <input v-model="newItinerary.hours" type="text" placeholder="營業時間" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
+                </div>
+                <input v-model="newItinerary.price" type="text" placeholder="門票/費用" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-teal">
+                <textarea v-model="newItinerary.note" placeholder="備註/細節" rows="3" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-teal"></textarea>
+            </div>
+            <div class="flex space-x-3 mt-6">
+                <button @click="showItineraryModal = false; isEditMode = false" :class="isEditMode ? 'w-1/3' : 'flex-1'" class="py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button>
+                
+                <button v-if="isEditMode" @click="removeItineraryItem(newItinerary.id)" class="w-1/3 py-3 rounded-xl bg-red-100 text-red-600 font-bold text-sm hover:bg-red-200 transition-colors">
+                    <i class="fa-solid fa-trash-can mr-1"></i> 刪除
+                </button>
+                
+                <button @click="saveItineraryItem" :class="isEditMode ? 'w-1/3' : 'flex-1'" class="py-3 rounded-xl bg-deep-teal text-white font-bold text-sm shadow-lg shadow-deep-teal/30">{{ isEditMode ? '儲存修改' : '新增行程' }}</button>
+            </div>
+        </div>
+    </div>
+
+
+</div> <script>
+    const { createApp, ref, computed, onMounted } = Vue
+
+    createApp({
+        setup() {
+            // 匯率基準 (參考值)
+            const EXCHANGE_RATES = {
+                HKD: 4.15, // 港幣对台幣
+                MYR: 7.20  // 馬幣对台幣
+            };
+
+            // 標籤顏色與圖示定義
+            const CATEGORY_MAP = {
+                sightseeing: { color: 'bg-green-500', icon: 'fa-solid fa-camera' },
+                food: { color: 'bg-vibrant-orange', icon: 'fa-solid fa-utensils' }, // 食物改橘色
+                shopping: { color: 'bg-indigo-500', icon: 'fa-solid fa-bag-shopping' },
+                accommodation: { color: 'bg-purple-500', icon: 'fa-solid fa-bed' },
+                flight: { color: 'bg-blue-500', icon: 'fa-solid fa-plane-departure' },
+                transport: { color: 'bg-teal-500', icon: 'fa-solid fa-van-shuttle' }, // 交通改青色
+                ticket: { color: 'bg-cyan-500', icon: 'fa-solid fa-ticket' },
+                other: { color: 'bg-slate-500', icon: 'fa-solid fa-circle-info' },
+                stay: { color: 'bg-purple-500', icon: 'fa-solid fa-hotel' }, 
+            };
+            const CATEGORY_LABEL_MAP = {
+                sightseeing: '景點', food: '飲食', shopping: '購物', accommodation: '住宿', flight: '航班', transport: '交通', ticket: '門票', other: '其他', stay: '住宿'
+            };
+
+            // 當前頁面
+            const currentTab = ref('itinerary');
+
+            // --- 資料定義 ---
+            
+            const dates = ref([
+                { date: '2/12', weekday: '四', hasCar: false, country: 'MY' },
+                { date: '2/13', weekday: '五', hasCar: true, country: 'MY' },
+                { date: '2/14', weekday: '六', hasCar: true, country: 'MY' }, 
+                { date: '2/15', weekday: '日', hasCar: true, country: 'MY' },
+                { date: '2/16', weekday: '一', hasCar: true, country: 'MY' }, 
+                { date: '2/17', weekday: '二', hasCar: true, country: 'MY' }, 
+                { date: '2/18', weekday: '三', hasCar: true, country: 'MY' }, 
+                { date: '2/19', weekday: '四', hasCar: false, country: 'MY/HK' }, // 移動日
+                { date: '2/20', weekday: '五', hasCar: false, country: 'HK' },
+                { date: '2/21', weekday: '六', hasCar: false, country: 'HK' },
+                { date: '2/22', weekday: '日', hasCar: false, country: 'HK' },
+                { date: '2/23', weekday: '一', hasCar: false, country: 'HK' },
+                { date: '2/24', weekday: '二', hasCar: false, country: 'HK' },
+            ]);
+
+            const hotels = ref([
+                { name: '吉隆坡文華東方酒店', date: '2/12 - 2/19 (7晚)', phone: '+60 3-2380 8888', address: 'Kuala Lumpur City Centre, 50088 Kuala Lumpur', country: 'MY' },
+                { name: '尖沙咀凱悅酒店', date: '2/20 - 2/24 (4晚)', phone: '+852 2311 1234', address: '香港尖沙咀河內道18號', country: 'HK' },
+            ]);
+            
+            // 使用者的完整行程資料
+            const itineraryData = ref([
+                // Day 1: 2/12 (四) 抵達吉隆坡
+                [
+                    { id: 101, name: '桃園機場報到', category: 'flight', startTime: '00:20', address: '桃園國際機場 (TPE)', note: '飛往吉隆坡，預計 05:10 抵達', hours: null, price: null, transportType: 'flight', travelTime: null, isNoteExpanded: false },
+                    { id: 102, name: '抵達吉隆坡 (KUL)', category: 'flight', startTime: '05:10', address: 'KUL 吉隆坡機場', note: '入境、換匯、購買網卡', hours: null, price: null, transportType: 'flight', travelTime: '4h50m', isNoteExpanded: false },
+                    { id: 103, name: '機場接送 -> 市區', category: 'transport', startTime: '06:30', address: '吉隆坡文華東方酒店', note: '寄放行李、稍作休息', hours: null, price: 'Grab/包車', transportType: 'car', travelTime: '1h', isNoteExpanded: false },
+                    { id: 104, name: '早餐 (何九海南茶店)', category: 'food', startTime: '08:00', address: '茨廠街周邊', note: '咖椰吐司、半熟蛋、海南茶。', hours: '07:30-14:30', price: '平價', transportType: 'car', travelTime: '15m', isNoteExpanded: false },
+                    { id: 105, name: '鬼仔巷 & 茨廠街', category: 'sightseeing', startTime: '09:30', address: 'Chinatown', note: '壁畫拍照，買義欽豆腐花', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 106, name: '中央藝術坊 (Central Market)', category: 'shopping', startTime: '10:30', address: 'Central Market', note: '購買手工藝品、峇迪布 (Batik)', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 107, name: '飯店 Check-in & 休息', category: 'accommodation', startTime: '14:00', address: '吉隆坡文華東方酒店', note: '補眠休息', hours: null, price: null, transportType: 'car', travelTime: '15m', isNoteExpanded: false },
+                    { id: 108, name: '晚餐 (亞羅街夜市)', category: 'food', startTime: '19:00', address: 'Jalan Alor', note: '黃亞華小食店 (燒雞翅、沙嗲)', hours: '16:00-03:00', price: '平價', transportType: 'car', travelTime: '10m', isNoteExpanded: false },
+                ],
+                // Day 2: 2/13 (五) 吉隆坡市區
+                [
+                    { id: 201, name: '午餐 (Madam Kwan\'s)', category: 'food', startTime: '12:00', address: 'Suria KLCC', note: '必點：Nasi Lemak (椰漿飯)', hours: '11:00-22:00', price: '~MYR 40/人', transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 202, name: 'KLCC 陽光廣場 & 雙子星塔', category: 'shopping', startTime: '13:30', address: 'Petronas Twin Towers', note: '吉隆坡地標，逛街購物', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 203, name: '水族館 Aquaria KLCC', category: 'sightseeing', startTime: '15:30', address: 'KLCC', note: '海底隧道', hours: '10:00-20:00', price: 'MYR 75', transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 204, name: '晚餐 (寶香綁線肉骨茶)', category: 'food', startTime: '19:00', address: 'Pavilion KL', note: '正宗肉骨茶', hours: null, price: null, transportType: 'walk', travelTime: '15m', isNoteExpanded: false },
+                    { id: 205, name: 'Saloma Link Bridge', category: 'sightseeing', startTime: '21:00', address: 'Saloma Link', note: '欣賞夜景，拍照打卡點', hours: null, price: '免費', transportType: 'walk', travelTime: '15m', isNoteExpanded: false },
+                ],
+                // Day 3: 2/14 (六) 黑風洞 & 市區
+                [
+                    { id: 301, name: '黑風洞 (Batu Caves)', category: 'sightseeing', startTime: '09:00', address: 'Batu Caves', note: '彩虹階梯，小心猴子。穿著需過膝。', hours: '07:00-21:00', price: '免費', transportType: 'car', travelTime: '30m', isNoteExpanded: false },
+                    { id: 302, name: '午餐 (印度料理)', category: 'food', startTime: '12:30', address: 'Little India (Brickfields)', note: '體驗香蕉葉飯', hours: null, price: '平價', transportType: 'car', travelTime: '20m', isNoteExpanded: false },
+                    { id: 303, name: '國家清真寺 & 獨立廣場', category: 'sightseeing', startTime: '14:30', address: 'Dataran Merdeka', note: '吉隆坡歷史地標', hours: null, price: '免費', transportType: 'car', travelTime: '15m', isNoteExpanded: false },
+                    { id: 304, name: '晚餐 (新峰肉骨茶)', category: 'food', startTime: '19:00', address: 'Imbi', note: '老字號肉骨茶', hours: null, price: null, transportType: 'car', travelTime: '15m', isNoteExpanded: false },
+                ],
+                // Day 4: 2/15 (日) 馬六甲一日遊
+                [
+                    { id: 401, name: '包車前往馬六甲', category: 'transport', startTime: '09:00', address: 'Malacca', note: '車程約 2 小時', hours: null, price: '包車費用', transportType: 'car', travelTime: '2h', isNoteExpanded: false },
+                    { id: 402, name: '荷蘭紅屋 & 基督堂', category: 'sightseeing', startTime: '11:00', address: 'Red Square', note: '馬六甲地標，殖民風格建築', hours: null, price: '免費', transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 403, name: '午餐 (雞球飯粒)', category: 'food', startTime: '12:30', address: '中華茶室 或 和記', note: '馬六甲特色海南雞飯粒', hours: null, price: '平價', transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 404, name: '雞場街 (Jonker Walk)', category: 'shopping', startTime: '14:00', address: 'Jonker Street', note: '逛老街，買三叔公伴手禮', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 405, name: '馬六甲海峽清真寺', category: 'sightseeing', startTime: '16:30', address: 'Melaka Straits Mosque', note: '海上清真寺', hours: null, price: '免費', transportType: 'car', travelTime: '15m', isNoteExpanded: false },
+                    { id: 406, name: '返回吉隆坡', category: 'transport', startTime: '18:00', address: '吉隆坡', note: '返回飯店', hours: null, price: null, transportType: 'car', travelTime: '2h', isNoteExpanded: false },
+                ],
+                // Day 5: 2/16 (一) 雲頂高原
+                [
+                    { id: 501, name: '前往雲頂高原', category: 'transport', startTime: '10:00', address: 'Genting Highlands', note: '搭乘纜車上山', hours: null, price: null, transportType: 'car', travelTime: '1h', isNoteExpanded: false },
+                    { id: 502, name: '雲頂天城室內遊樂園', category: 'sightseeing', startTime: '11:30', address: 'Skytropolis Indoor Theme Park', note: '室內遊樂設施', hours: '10:00-22:00', price: 'MYR 65', transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 503, name: '午餐 (雲頂)', category: 'food', startTime: '13:30', address: 'High Line Roof Top Market', note: '多樣化餐飲選擇', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 504, name: '雲頂名牌折扣購物中心', category: 'shopping', startTime: '15:30', address: 'Genting Highlands Premium Outlets', note: 'Outlet 購物', hours: '10:00-22:00', price: null, transportType: 'car', travelTime: '20m', isNoteExpanded: false },
+                    { id: 505, name: '返回吉隆坡', category: 'transport', startTime: '18:30', address: '吉隆坡', note: '晚餐回市區享用', hours: null, price: null, transportType: 'car', travelTime: '1h', isNoteExpanded: false },
+                ],
+                // Day 6: 2/17 (二) 布城 (Putrajaya)
+                [
+                     { id: 601, name: '前往布城', category: 'transport', startTime: '10:00', address: 'Putrajaya', note: '粉紅清真寺', hours: null, price: null, transportType: 'car', travelTime: '40m', isNoteExpanded: false },
+                     { id: 602, name: '粉紅清真寺', category: 'sightseeing', startTime: '11:00', address: 'Putra Mosque', note: '夢幻粉紅建築，湖畔景色', hours: null, price: '免費', transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                     { id: 603, name: '午餐', category: 'food', startTime: '13:00', address: 'Putrajaya', note: '周邊餐廳', hours: null, price: null, transportType: 'car', travelTime: '10m', isNoteExpanded: false },
+                     { id: 604, name: 'IOI City Mall', category: 'shopping', startTime: '15:00', address: 'IOI City Mall', note: '超大購物中心，有溜冰場', hours: '10:00-22:00', price: null, transportType: 'car', travelTime: '15m', isNoteExpanded: false },
+                     { id: 605, name: '返回吉隆坡', category: 'transport', startTime: '19:00', address: '吉隆坡', note: '晚餐', hours: null, price: null, transportType: 'car', travelTime: '40m', isNoteExpanded: false },
+                ],
+                // Day 7: 2/18 (三) 市區漫遊/放鬆
+                [
+                    { id: 701, name: 'The Gardens Mall / Mid Valley', category: 'shopping', startTime: '11:00', address: 'Mid Valley Megamall', note: '大型購物商場群', hours: '10:00-22:00', price: null, transportType: 'car', travelTime: '20m', isNoteExpanded: false },
+                    { id: 702, name: '午餐', category: 'food', startTime: '13:00', address: 'Mid Valley', note: '商場內美食', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 703, name: '飯店泳池/SPA', category: 'other', startTime: '15:30', address: 'Mandarin Oriental', note: '享受飯店設施', hours: null, price: null, transportType: 'car', travelTime: '20m', isNoteExpanded: false },
+                    { id: 704, name: '晚餐 (10號胡同)', category: 'food', startTime: '19:00', address: 'Lot 10 Hutong', note: '集結吉隆坡老字號美食', hours: '10:00-22:00', price: '中價位', transportType: 'car', travelTime: '15m', isNoteExpanded: false },
+                ],
+                // Day 8: 2/19 (四) 飛往香港
+                [
+                    { id: 801, name: '退房 & 寄放行李', category: 'accommodation', startTime: '11:00', address: '吉隆坡文華東方酒店', note: '最後採買', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 802, name: '午餐', category: 'food', startTime: '12:30', address: 'KLCC', note: '簡單用餐', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 803, name: '前往 SZB 機場', category: 'transport', startTime: '17:30', address: 'Sultan Abdul Aziz Shah Airport (SZB)', note: '前往梳邦機場 (注意不是 KLIA)', hours: null, price: 'Grab', transportType: 'car', travelTime: '45m', isNoteExpanded: false },
+                    { id: 804, name: '機場報到', category: 'flight', startTime: '19:00', address: 'SZB Airport', note: '預計 21:30 起飛', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 805, name: '飛往香港', category: 'flight', startTime: '21:30', address: 'HKG 香港機場', note: '預計 01:45 (+1) 抵達', hours: null, price: null, transportType: 'flight', travelTime: '4h15m', isNoteExpanded: false },
+                ],
+                // Day 9: 2/20 (五) 抵達香港 & 休息
+                [
+                    { id: 901, name: '抵達香港', category: 'flight', startTime: '01:45', address: '香港國際機場', note: '入境、領取行李', hours: null, price: null, transportType: 'flight', travelTime: null, isNoteExpanded: false },
+                    { id: 902, name: '前往飯店', category: 'transport', startTime: '02:45', address: '尖沙咀凱悅酒店', note: '搭乘計程車 (夜間加成)', hours: null, price: 'HKD ~350', transportType: 'car', travelTime: '40m', isNoteExpanded: false },
+                    { id: 903, name: '飯店 Check-in & 補眠', category: 'accommodation', startTime: '03:30', address: '尖沙咀凱悅酒店', note: '休息至中午', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 904, name: '午餐 (點點心/添好運)', category: 'food', startTime: '13:00', address: '尖沙咀周邊', note: '飲茶', hours: null, price: null, transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 905, name: '星光大道 & 維多利亞港', category: 'sightseeing', startTime: '15:00', address: '星光大道', note: '欣賞維港景色', hours: null, price: '免費', transportType: 'walk', travelTime: '15m', isNoteExpanded: false },
+                    { id: 906, name: '海港城購物', category: 'shopping', startTime: '17:00', address: '海港城', note: '逛街', hours: '10:00-22:00', price: null, transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 907, name: '晚餐 (大排檔)', category: 'food', startTime: '19:30', address: '妹記大排檔', note: '體驗道地港式鑊氣', hours: null, price: null, transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                ],
+                // Day 10: 2/21 (六) 香港迪士尼
+                [
+                    { id: 1001, name: '早餐 (澳洲牛奶公司)', category: 'food', startTime: '08:30', address: '佐敦', note: '炒蛋多士、燉奶', hours: null, price: null, transportType: 'public', travelTime: '15m', isNoteExpanded: false },
+                    { id: 1002, name: '香港迪士尼樂園', category: 'sightseeing', startTime: '10:30', address: '香港迪士尼樂園', note: '魔雪奇緣世界', hours: '10:30-20:30', price: 'HKD 639起', transportType: 'public', travelTime: '45m', isNoteExpanded: false },
+                    { id: 1003, name: '迪士尼煙火表演', category: 'sightseeing', startTime: '20:30', address: '奇妙夢想城堡', note: '煙火秀', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                ],
+                // Day 11: 2/22 (日) 中環 & 太平山
+                [
+                    { id: 1101, name: '天星小輪 -> 中環', category: 'transport', startTime: '10:30', address: '尖沙咀天星碼頭', note: '搭船過海', hours: null, price: 'HKD 5.0', transportType: 'other', travelTime: '10m', isNoteExpanded: false },
+                    { id: 1102, name: '中環半山手扶梯', category: 'sightseeing', startTime: '11:00', address: '中環', note: '途經大館', hours: null, price: '免費', transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 1103, name: '午餐 (九記牛腩)', category: 'food', startTime: '12:30', address: '中環歌賦街21號', note: '上湯牛腩伊麵', hours: null, price: '現金', transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 1104, name: '山頂纜車 -> 太平山', category: 'sightseeing', startTime: '15:00', address: '山頂纜車總站', note: '凌霄閣摩天台428', hours: null, price: 'HKD 148', transportType: 'walk', travelTime: '20m', isNoteExpanded: false },
+                    { id: 1105, name: '晚餐 (橋底辣蟹)', category: 'food', startTime: '20:00', address: '灣仔', note: '避風塘炒蟹', hours: null, price: '高價位', transportType: 'car', travelTime: '15m', isNoteExpanded: false },
+                ],
+                // Day 12: 2/23 (一) 銅鑼灣 & 叮叮車
+                [
+                    { id: 1201, name: '早餐 (蘭芳園)', category: 'food', startTime: '09:30', address: '尖沙咀', note: '絲襪奶茶', hours: null, price: null, transportType: 'walk', travelTime: '5m', isNoteExpanded: false },
+                    { id: 1202, name: '叮叮車體驗', category: 'sightseeing', startTime: '11:00', address: '港島區', note: '搭乘電車漫遊', hours: null, price: 'HKD 3.0', transportType: 'public', travelTime: '30m', isNoteExpanded: false },
+                    { id: 1203, name: '銅鑼灣 時代廣場/SOGO', category: 'shopping', startTime: '13:00', address: '銅鑼灣', note: '最後衝刺購物', hours: null, price: null, transportType: 'walk', travelTime: '10m', isNoteExpanded: false },
+                    { id: 1204, name: '晚餐 (燒臘)', category: 'food', startTime: '18:30', address: '甘牌燒鵝 或 再興燒臘', note: '必吃燒臘', hours: null, price: null, transportType: 'public', travelTime: '15m', isNoteExpanded: false },
+                ],
+                // Day 13: 2/24 (二) 回程
+                [
+                    { id: 1301, name: '退房 & 前往機場', category: 'transport', startTime: '09:00', address: '香港國際機場', note: '機場快線預辦登機(若有)', hours: null, price: null, transportType: 'public', travelTime: '45m', isNoteExpanded: false },
+                    { id: 1302, name: '機場報到', category: 'flight', startTime: '10:00', address: 'HKG', note: '12:15 起飛', hours: null, price: null, transportType: 'walk', travelTime: '0m', isNoteExpanded: false },
+                    { id: 1303, name: '飛往台北', category: 'flight', startTime: '12:15', address: 'TPE 桃園機場', note: '13:55 抵達台北', hours: null, price: null, transportType: 'flight', travelTime: '1h40m', isNoteExpanded: false },
+                ],
+            ]);
+
+            // 預設天氣資訊
+            const weatherData = ref([
+                { condition: 'sunny', temp: '32', feel: '35' }, // 2/12 MY
+                { condition: 'sunny', temp: '33', feel: '36' }, // 2/13 MY
+                { condition: 'sunny', temp: '32', feel: '35' }, // 2/14 MY
+                { condition: 'cloudy', temp: '31', feel: '34' },// 2/15 MY
+                { condition: 'rain', temp: '30', feel: '33' },  // 2/16 MY
+                { condition: 'sunny', temp: '33', feel: '36' }, // 2/17 MY
+                { condition: 'cloudy', temp: '32', feel: '35' },// 2/18 MY
+                { condition: 'sunny', temp: '32', feel: '35' }, // 2/19 MY
+                { condition: 'cloudy', temp: '18', feel: '16' }, // 2/20 HK
+                { condition: 'sunny', temp: '20', feel: '18' },  // 2/21 HK
+                { condition: 'sunny', temp: '21', feel: '19' },  // 2/22 HK
+                { condition: 'cloudy', temp: '19', feel: '17' }, // 2/23 HK
+                { condition: 'cloudy', temp: '20', feel: '18' }, // 2/24 HK
+            ]);
+            
+            // 購物清單 (範例資料)
+            const shoppingList = ref([
+                { name: '珍妮曲奇 (小熊餅乾)', image: 'https://via.placeholder.com/100/FFFBF0/D32F2F?text=JennyCookies' },
+                { name: 'Beryl\'s 巧克力', image: 'https://via.placeholder.com/100/FFFBF0/009688?text=Beryls' },
+                { name: 'Old Town 白咖啡', image: 'https://via.placeholder.com/100/FFFBF0/FBC02D?text=WhiteCoffee' },
+                { name: '黃道益活絡油', image: 'https://via.placeholder.com/100/FFFBF0/D32F2F?text=Oil' },
+            ]);
+
+            // 花費紀錄 (範例資料 - 台幣)
+            const expenses = ref([
+                { name: '機票 (TPE-KUL-HKG-TPE)', amount: 32000, category: 'flight', date: '2026-01-10', payment: 'card' },
+                { name: '香港迪士尼門票', amount: 5200, category: 'ticket', date: '2026-02-21', payment: 'card' },
+                { name: '茨廠街早餐', amount: 300, category: 'food', date: '2026-02-12', payment: 'cash' },
+            ]);
+
+            // --- 狀態控制 ---
+            const selectedDateIndex = ref(0);
+            const showShoppingModal = ref(false);
+            const showExpenseModal = ref(false);
+            const showItineraryModal = ref(false);
+            const isEditMode = ref(false); 
+            
+            // 新增/編輯行程狀態
+            const newItinerary = ref({
+                id: null, name: '', category: 'sightseeing', startTime: '', hours: '', address: '', price: '', note: '', transportType: 'car', travelTime: '', isNoteExpanded: false
+            });
+            // 新增購物狀態
+            const newShoppingItem = ref({
+                name: '', image: null
+            });
+            // 新增花費狀態
+            const newExpense = ref({
+                name: '', amount: null, category: 'food', date: new Date().toISOString().substring(0, 10), payment: 'cash'
+            });
+
+            // 貨幣轉換
+            const currencyMode = ref('HKD'); // HKD or MYR
+            const currencyInput = ref(100);
+            const currencyResult = ref(0);
+            
+            // --- Computed Properties ---
+            
+            const currentItinerary = computed(() => {
+                if (!itineraryData.value[selectedDateIndex.value]) {
+                    itineraryData.value[selectedDateIndex.value] = [];
+                }
+                return itineraryData.value[selectedDateIndex.value];
+            });
+
+            const totalExpensesTWD = computed(() => {
+                return expenses.value.reduce((sum, exp) => sum + exp.amount, 0);
+            });
+
+            // --- Methods ---
+
+            const calculateCurrency = () => {
+                const rate = EXCHANGE_RATES[currencyMode.value] || 1;
+                currencyResult.value = Math.round(currencyInput.value * rate);
+            };
+
+            const formatNumber = (num) => {
+                if (num === 0 || num === null || num === undefined) return '0';
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            };
+
+            // 取得顏色/圖示/描述
+            const getCategoryColor = (category) => CATEGORY_MAP[category]?.color || CATEGORY_MAP.other.color;
+            const getCategoryIcon = (category) => CATEGORY_MAP[category]?.icon || CATEGORY_MAP.other.icon;
+            const getCategoryLabel = (category) => CATEGORY_LABEL_MAP[category] || '其他';
+            const getWeatherIcon = (condition) => {
+                const map = {
+                    sunny: 'fa-solid fa-sun',
+                    cloudy: 'fa-solid fa-cloud-sun',
+                    rain: 'fa-solid fa-cloud-showers-heavy'
+                };
+                return map[condition] || 'fa-solid fa-cloud';
+            };
+            const getWeatherDescription = (condition) => {
+                const map = {
+                    sunny: '晴朗炎熱',
+                    cloudy: '多雲舒適',
+                    rain: '午後雷陣雨'
+                };
+                return map[condition] || '天氣資訊未定';
+            };
+            const getTransportIcon = (type) => {
+                const map = {
+                    walk: 'fa-solid fa-person-walking',
+                    car: 'fa-solid fa-car',
+                    bus: 'fa-solid fa-bus',
+                    public: 'fa-solid fa-train-subway',
+                    flight: 'fa-solid fa-plane',
+                    other: 'fa-solid fa-ferry' 
+                };
+                return map[type] || 'fa-solid fa-arrow-right';
+            };
+
+            // 地圖功能
+            const openMap = (query) => {
+                if (query) {
+                    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+                    window.open(url, '_blank');
+                }
+            };
+
+            const openMapDirections = (startItem, endItem) => {
+                const origin = startItem.address || startItem.name;
+                const destination = endItem.address || endItem.name;
+                
+                if (origin && destination) {
+                    const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=${endItem.transportType === 'car' ? 'driving' : 'transit'}`;
+                    window.open(url, '_blank');
+                } else {
+                    alert('移動兩點間至少需要一個地點名稱或地址。');
+                }
+            };
+            
+            // 浮動按鈕點擊處理
+            const handleAddClick = () => {
+                if (currentTab.value === 'itinerary') {
+                    resetItineraryForm();
+                    showItineraryModal.value = true;
+                } else if (currentTab.value === 'shopping') {
+                    resetShoppingForm();
+                    showShoppingModal.value = true;
+                } else if (currentTab.value === 'expenses') {
+                    resetExpenseForm();
+                    showExpenseModal.value = true;
+                }
+            };
+            
+            // --- 行程管理 ---
+            const resetItineraryForm = () => {
+                isEditMode.value = false;
+                newItinerary.value = {
+                    id: Date.now(), name: '', category: 'sightseeing', startTime: '', hours: '', address: '', price: '', note: '', transportType: 'car', travelTime: '', isNoteExpanded: false
+                };
+            };
+
+            const editItem = (item) => {
+                isEditMode.value = true;
+                newItinerary.value = JSON.parse(JSON.stringify(item)); 
+                showItineraryModal.value = true;
+            };
+
+            const saveItineraryItem = () => {
+                if (!newItinerary.value.name) {
+                    alert('行程名稱不能為空');
+                    return;
+                }
+                
+                if (isEditMode.value) {
+                    const index = currentItinerary.value.findIndex(item => item.id === newItinerary.value.id);
+                    if (index !== -1) {
+                        currentItinerary.value[index] = { ...newItinerary.value };
+                    }
+                } else {
+                    const newItem = { ...newItinerary.value };
+                    newItem.id = Date.now();
+                    itineraryData.value[selectedDateIndex.value].push(newItem);
+                }
+                
+                itineraryData.value[selectedDateIndex.value] = [...currentItinerary.value];
+                
+                showItineraryModal.value = false;
+                isEditMode.value = false;
+            };
+            
+            const removeItineraryItem = (id) => {
+                if (confirm('確定要刪除這個行程嗎？此操作無法復原。')) {
+                    const currentList = itineraryData.value[selectedDateIndex.value];
+                    const index = currentList.findIndex(item => item.id === id);
+                    
+                    if (index !== -1) {
+                        currentList.splice(index, 1);
+                        itineraryData.value[selectedDateIndex.value] = [...currentList];
+                        showItineraryModal.value = false;
+                        isEditMode.value = false;
+                    }
+                }
+            };
+            
+            const moveItinerary = (id, direction) => {
+                const currentList = currentItinerary.value;
+                const index = currentList.findIndex(item => item.id === id);
+
+                if (index === -1) return;
+
+                const newIndex = index + direction;
+                if (newIndex >= 0 && newIndex < currentList.length) {
+                    const item = currentList.splice(index, 1)[0];
+                    currentList.splice(newIndex, 0, item);
+                    itineraryData.value[selectedDateIndex.value] = [...currentList];
+                }
+            };
+
+            const moveItineraryUp = (id) => moveItinerary(id, -1);
+            const moveItineraryDown = (id) => moveItinerary(id, 1);
+
+
+            // --- 購物清單管理 ---
+            const resetShoppingForm = () => {
+                newShoppingItem.value = { name: '', image: null };
+            };
+            
+            const handleImageUpload = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        newShoppingItem.value.image = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const addShoppingItem = () => {
+                if (newShoppingItem.value.name.trim() === '') {
+                    alert('商品名稱不能為空！');
+                    return;
+                }
+                shoppingList.value.push({ ...newShoppingItem.value });
+                showShoppingModal.value = false;
+                resetShoppingForm();
+            };
+
+            const removeShoppingItem = (index) => {
+                shoppingList.value.splice(index, 1);
+            };
+
+            // --- 花費管理 ---
+            const resetExpenseForm = () => {
+                newExpense.value = { name: '', amount: null, category: 'food', date: new Date().toISOString().substring(0, 10), payment: 'cash' };
+            };
+
+            const addExpense = () => {
+                if (newExpense.value.name.trim() === '' || newExpense.value.amount === null || newExpense.value.amount <= 0) {
+                    alert('請輸入有效名稱和金額！');
+                    return;
+                }
+                expenses.value.push({ ...newExpense.value });
+                expenses.value.sort((a, b) => new Date(b.date) - new Date(a.date)); 
+                showExpenseModal.value = false;
+                resetExpenseForm();
+            };
+
+            const removeExpense = (index) => {
+                expenses.value.splice(index, 1);
+            };
+
+
+            onMounted(() => {
+                calculateCurrency();
+                expenses.value.sort((a, b) => new Date(b.date) - new Date(a.date));
+            });
+
+            return {
+                currentTab, dates, selectedDateIndex, itineraryData, currentItinerary,
+                hotels, shoppingList, expenses, totalExpensesTWD,
+                weatherData, currencyMode, currencyInput, currencyResult, calculateCurrency, EXCHANGE_RATES,
+                getCategoryColor, getCategoryIcon, getCategoryLabel, getWeatherIcon, getTransportIcon, getWeatherDescription,
+                showShoppingModal, showExpenseModal, showItineraryModal, isEditMode,
+                newShoppingItem, newExpense, newItinerary,
+                handleAddClick, handleImageUpload, addShoppingItem, removeShoppingItem,
+                addExpense, removeExpense, editItem, saveItineraryItem,
+                removeItineraryItem, 
+                moveItineraryUp, moveItineraryDown, 
+                openMap, openMapDirections, formatNumber
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
